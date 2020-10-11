@@ -1,8 +1,9 @@
+from datetime import date
+from enum import Enum, auto
+
+import pdfkit
 from jinja2 import Environment, FileSystemLoader
 from lorem_text import lorem
-import pdfkit
-from enum import Enum, auto
-from datetime import date
 
 
 class HtmlElementType(Enum):
@@ -57,23 +58,24 @@ class HtmlContent:
 
 def createComponents():
     """
-    Hier werden die Komponenten der Tabelle erstellt
+    Hier werden die Komponenten des Dokumentes erstellt
     Die Reihenfolge ist wichtig!
     :return: Komponenten als Liste
     """
 
     # TODO: Die richtigen Daten einfügen und nutzen
 
-    # Liste der Elemente wird initialisiert die später in der Tabelle entstehen
+    # Liste der Komponenten wird initialisiert
     elements = []
 
     # Das Adressfeld wird initialisiert (muss immer am Anfang stehen!)
+    # Die Daten dafür müssen im content dict angepasst werden
     elements.append(HtmlContent(element_type=HtmlElementType.ADDRESSFIELD))
 
     # Ein Betreff  wird eingefügt
     elements.append(HtmlContent(title=lorem.words(2), element_type=HtmlElementType.SUBJECT))
 
-    # Textabsätze werden hinzugefügt mit Überschrift
+    # Generische Textabsätze werden mit Überschrift hinzugefügt
     for i in range(0, 5):
         title = lorem.words(4)
         content = lorem.paragraphs(2)
@@ -86,10 +88,10 @@ def createComponents():
         content = lorem.words(5)
         # Die Zeilen werden befüllt
         table_content.append(HtmlContent(title=title, content=content, element_type=HtmlElementType.TABLEROW))
-    # Die Zeilen werden einer Tabelle hinzugefügt
+    # Die Zeilen werden einer Tabelle hinzugefügt und die den Komponenten
     elements.append(HtmlContent(title="Testtabelle", content=table_content, element_type=HtmlElementType.TABLE))
 
-    # Eine weitere Überschrift wurd hinzugefügt
+    # Eine Unter-Überschrift wurd hinzugefügt
     elements.append(HtmlContent(title=lorem.words(2), element_type=HtmlElementType.HEADING))
 
     # Es werden Absätze mit dem Titel links und dem Inhalt rechts hinzugefügt
@@ -98,8 +100,7 @@ def createComponents():
         content = lorem.paragraphs(1)
         elements.append(HtmlContent(title=title, content=content, element_type=HtmlElementType.SIDEPARAGRAPH))
 
-
-    # Paragraph vor den Unterschriften und Unterschriften
+    # Absatz vor den Unterschriften und Unterschriften
     elements.append(HtmlContent(content=lorem.paragraphs(1), element_type=HtmlElementType.PARAGRAPH))
     elements.append(HtmlContent(element_type=HtmlElementType.SIGNATURES))
 
@@ -108,16 +109,15 @@ def createComponents():
 
 def create_contract():
     """
-    Erstellt einen HTML Vertrag
+    Erstellt das Dokument
     Im Content übergeben werden "elements",
-    diese Elements sind die Komponenten aus denen ein Vertrag zusammengestellt wird
+    diese Elements sind die Komponenten aus denen ein Dokument zusammengestellt wird
     z.B. Tabellen etc.
     Daten die in diesen Tabellen, Textelementen etc. stehen werden nicht hier übergeben sondern in
     createComponents()
-    Weiterhin in "content" übergeben werden Daten sstatische Daten wie "Ansprechpartner", Firmenadresse etc.
-    :return:
+    In "content" übergeben werden Daten statische Daten wie "Ansprechpartner", Firmenadresse etc.
     """
-    # TODO: Hier und im Template "contract.html" anpassen / einfügen
+    # TODO: Statische Daten anpassen
     content = {
         'elements': createComponents(),
         'company_full_name': lorem.words(1),
@@ -132,7 +132,6 @@ def create_contract():
         'rec': lorem.words(2),
         'rec_addr1': lorem.words(2),
         'rec_addr2':lorem.words(2),
-
     }
 
     file_loader = FileSystemLoader('./')
@@ -153,7 +152,7 @@ def create_contract():
         '--header-html': './header.html',
         '--footer-html': './footer.html',
         'footer-right': 'Seite [page] von [topage]',
-        'footer-left': lorem.words(1),
+        'footer-left': content.get("company_full_name", lorem.words(1)),
         'footer-font-size': '6',
         'footer-line': '',
         '--footer-font-name': 'Open Sans',
