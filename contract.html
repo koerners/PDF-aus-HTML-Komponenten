@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+</head>
+<style>
+
+    body {
+        font-family: Open Sans;
+        text-align: justify;
+        page-break-before: always;
+    }
+
+    .address {
+        position: absolute;
+        top: 5.08cm;
+        float: left;
+    }
+
+    .addressfield {
+        height: 10cm;
+        position: relative;
+    }
+
+    .absender {
+        font-size: 6pt;
+    }
+
+    .sig {
+        font-size: 9pt;
+    }
+
+    .sig-line {
+        height: 1px;
+        background: black;
+        margin-bottom: 15px;
+    }
+
+    .signature-field {
+        margin-top: 100px;
+
+    }
+
+    .info-right {
+        float: right;
+        text-align: right;
+    }
+</style>
+<body>
+
+<div class="container">
+
+    {% for item in elements %}
+    {% if item|isAddress %}
+    <div class="row addressfield">
+        <div class="address">
+            <div class="absender">{{ company_full_name }}|{{ company_addr1 }}|{{ company_addr2 }}</div>
+            {{ rec }}<br>
+            {{ rec_addr1 }}<br>
+            {{rec_addr2}}
+        </div>
+        <div class="info-right">
+
+            {{ company_full_name }}<br>
+            {{ company_addr1 }}<br>
+            {{ company_addr2 }}<br> <br>
+            Ansprechpartner für das Projekt:<br>
+            <b>{{ anspr_pr_1 }}</b> <br> <br>
+            Ansprechpartner für das Vertragsmanagement: <br>
+            <b>{{ anspr1 }}</b>
+
+            <div style="position: absolute; bottom: 0; right: 0">
+                {{ ort }}, den {{ datum }}
+            </div>
+
+        </div>
+    </div>
+    {% endif %}
+
+    {% if item|isHeading %}
+    <div class="row">
+        <h5>{{ item.title}}</h5>
+    </div>
+    {% endif %}
+
+    {% if item|isSubject %}
+    <div class="row">
+        <h5><b>{{ item.title}}</b></h5>
+    </div>
+    {% endif %}
+
+
+    {% if item|isParagraph %}
+    <div class="row paragraph">
+        <h6>{{ item.title }}</h6>
+        <p>{{ item.content }}</p>
+    </div>
+    {% endif %}
+
+
+    {% if item|isSideparagraph %}
+    <div class="row paragraph">
+        <div class="col s4">
+            <b>{{ item.title }}</b>
+        </div>
+        <div class="col s8">
+            {{ item.content }}
+        </div>
+    </div>
+    {% endif %}
+
+
+    {% if item|isUserHtml %}
+    <div class="row paragraph">
+        <h6>{{ item.title }}</h6>
+        <p>{{ item.content | safe }}</p>
+    </div>
+    {% endif %}
+
+    {% if item|isTable %}
+
+    <div class="row">
+        <h5>{{ item.title }}</h5>
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in item.content %}
+            <tr>
+                <td>{{ loop.index }}.</td>
+                <td><b>{{ row.title }}:</b></td>
+                <td>{{ row.content }}</td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if item|isSingature %}
+
+    <div class="row signature-field">
+
+        <div class="col s5 center-align">
+            <div class="sig-line"></div>
+            <div class="sig ">{{ name_sig_1 }}</div>
+        </div>
+        <div class="col s2">
+
+        </div>
+        <div class="col s5 center-align">
+            <div class="sig-line"></div>
+
+            <div class="sig">{{ name_sig_2 }}</div>
+        </div>
+    </div>
+
+    {% endif %}
+
+    {% endfor %}
+
+
+</div>
+
+</body>
+
+
+</html>
